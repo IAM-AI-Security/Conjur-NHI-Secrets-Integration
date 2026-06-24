@@ -1,0 +1,18 @@
+- !policy
+  id: conjur/authn-iam/prod
+  body:
+    - !webservice
+
+    - !group consumers
+
+    - !permit
+      role: !group consumers
+      privilege: [ read, authenticate ]
+      resource: !webservice
+
+- !host
+  id: "YOUR_AWS_ACCOUNT_ID/YOUR_IAM_USERNAME"
+
+- !grant
+  role: !group conjur/authn-iam/prod/consumers
+  member: !host "YOUR_AWS_ACCOUNT_ID/YOUR_IAM_USERNAME"

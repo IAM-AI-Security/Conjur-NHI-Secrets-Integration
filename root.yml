@@ -1,0 +1,36 @@
+- !policy
+  id: nhi-demo
+  body:
+    - !host
+      id: lambda-drift-scanner
+      annotations:
+        authn-iam/aws-account: "YOUR_AWS_ACCOUNT_ID"
+        authn-iam/aws-userid: YOUR_IAM_USERNAME
+
+    - !host
+      id: lambda-nhi-agent
+
+    - !variable
+      id: db-password
+
+    - !variable
+      id: admin-secret
+
+    - !permit
+      role: !host lambda-drift-scanner
+      privileges: [ read, execute ]
+      resource: !variable db-password
+
+    - !permit
+      role: !host lambda-nhi-agent
+      privileges: [ read, execute ]
+      resource: !variable admin-secret
+
+- !grant
+  role: !group conjur/authn-iam/prod/consumers
+  member: !host nhi-demo/lambda-drift-scanner
+
+- !permit
+  role: !host "YOUR_AWS_ACCOUNT_ID/YOUR_IAM_USERNAME"
+  privileges: [ read, execute ]
+  resource: !variable nhi-demo/db-password
